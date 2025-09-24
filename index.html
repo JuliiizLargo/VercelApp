@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Demo Flask en Vercel</title>
+</head>
+<body>
+  <h1>Agente Turístico (Demo)</h1>
+  <form id="form">
+    <input type="text" id="question" placeholder="Escribe tu pregunta..." required>
+    <button type="submit">Enviar</button>
+  </form>
+  <p><b>Respuesta:</b> <span id="respuesta"></span></p>
+
+  <script>
+    document.getElementById("form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const pregunta = document.getElementById("question").value;
+
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ question: pregunta })
+      });
+
+      const data = await res.json();
+      document.getElementById("respuesta").textContent = data.answer;
+    });
+  </script>
+</body>
+</html>

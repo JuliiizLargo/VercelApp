@@ -1,8 +1,9 @@
 from flask import Flask, request, jsonify, send_from_directory
 import random, re, os
 
-# Se agrega static_folder para servir el HTML y archivos estáticos de forma más clara
-app = Flask(__name__, static_folder=".", static_url_path="")
+# Se agrega static_folder para servir el HTML y archivos estáticos de forma más clara, agregando también la carpeta static
+#para cargar el CSS desde ahí.
+app = Flask(__name__, static_folder="static", static_url_path="/static")
 
 # -----------------------------
 # 1) Datos ficticios
@@ -181,3 +182,4 @@ if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     # host='0.0.0.0' permite que Vercel escuche correctamente
     app.run(host="0.0.0.0", port=port)
+

@@ -3,7 +3,7 @@
     { "src": "app.py", "use": "@vercel/python" }
   ],
   "routes": [
-    { "src": "/api/ask", "dest": "app.py" },
-    { "src": "/", "dest": "app.py" }
+    { "src": "/api/ask", "dest": "app.py" }
   ]
 }
+

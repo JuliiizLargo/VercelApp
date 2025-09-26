@@ -1,7 +1,8 @@
 from flask import Flask, request, jsonify, send_from_directory
-import random, re
+import random, re, os
 
-app = Flask(__name__)
+# Se agrega static_folder para servir el HTML y archivos estáticos de forma más clara
+app = Flask(__name__, static_folder=".", static_url_path="")
 
 # -----------------------------
 # 1) Datos ficticios
@@ -27,35 +28,47 @@ LUGARES = {
     "cancún": ["Playas del Caribe", "Isla Mujeres", "Ruinas de Tulum", "Cenotes"]
 }
 
-DISCLAIMER = "ℹ️ Nota: Esta información es ficticia y solo con fines académicos."
+DISCLAIMER = "ℹNota: Esta información es ficticia y solo con fines académicos."
 
 
 # -----------------------------
-# 2) Guardrails
+# 2) Guardrails (filtros de seguridad)
 # -----------------------------
 def guardrails(state):
-    question = state["question"].lower()
+    question = state["question"].lower().strip()
 
-    if not question.split():
-        return {**state, "blocked": True, "answer": "❌ No hay ninguna pregunta de entrada."}
+    # Verificar que haya texto
+    if not question:
+        return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
 
-    if any(p in question for p in ["odio", "odiar", "violencia", "insulto", "insultar", "matar", "robar", "pegar", "agredir", "golpear", "lastimar", "amenazar", "dañar", "abusar", "secuestrar", "secuestro", "torturar", "herir", "discriminar", "humillar", "intimidar", "vengar", "sabotear", "maltratar", "violar", "corromper", "estafar", "traicionar", "despreciar", "destruir", "oprimir", "castigar", "maldecir", "provocar", "burlar", "manipular", "saquear", "extorsionar", "asesinar"]
-):
-        return {**state, "blocked": True, "answer": "❌ Contenido inapropiado detectado."}
+    # Filtro de contenido dañino
+    palabras_prohibidas = [
+        "odio","odiar","violencia","insulto","insultar","matar","robar","pegar","agredir","golpear",
+        "lastimar","amenazar","dañar","abusar","secuestrar","secuestro","torturar","herir","discriminar",
+        "humillar","intimidar","vengar","sabotear","maltratar","violar","corromper","estafar","traicionar",
+        "despreciar","destruir","oprimir","castigar","maldecir","provocar","burlar","manipular","saquear",
+        "extorsionar","asesinar"
+    ]
+    if any(p in question for p in palabras_prohibidas):
+        return {**state, "blocked": True, "answer": "Contenido inapropiado detectado."}
 
+    # Datos personales
     if re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}", question):
-        return {**state, "blocked": True, "answer": "❌ No puedo procesar datos personales como correos."}
+        return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
     if re.search(r"\+?\d{8,}", question):
-        return {**state, "blocked": True, "answer": "❌ No puedo mostrar datos de contacto."}
+        return {**state, "blocked": True, "answer": "No puedo mostrar datos de contacto."}
 
+    # Preguntas muy cortas
     if len(question.split()) < 2:
-        return {**state, "blocked": True, "answer": "❌ Pregunta demasiado corta para recomendar algo."}
+        return {**state, "blocked": True, "answer": "Pregunta demasiado corta para recomendar algo."}
 
-    if any(p in question for p in ["plagio", "descargar libro gratis", "bypass", "paywall"]):
-        return {**state, "blocked": True, "answer": "❌ No puedo ayudar con tareas de plagio o acceso no autorizado."}
+    # Plagio / acceso no autorizado
+    if any(p in question for p in ["plagio","descargar libro gratis","bypass","paywall"]):
+        return {**state, "blocked": True, "answer": "No puedo ayudar con tareas de plagio o acceso no autorizado."}
 
-    if any(p in question for p in ["medicina", "tratamiento", "receta", "abogado", "demanda"]):
-        return {**state, "blocked": True, "answer": "⚠️ Este sistema no está diseñado para dar consejos médicos o legales."}
+    # Salud / legal
+    if any(p in question for p in ["medicina","tratamiento","receta","abogado","demanda"]):
+        return {**state, "blocked": True, "answer": "Este sistema no está diseñado para dar consejos médicos o legales."}
 
     return {**state, "blocked": False}
 
@@ -96,13 +109,13 @@ def agente_clima(state):
     destino = extraer_destino(state["question"])
     clima = random.choice(CLIMAS)
     return {**state, "context": "[Agente Clima]",
-            "answer": f"🌦️ El clima en {destino.title()} es {clima}. {DISCLAIMER}"}
+            "answer": f"El clima en {destino.title()} es {clima}. {DISCLAIMER}"}
 
 def agente_costos(state):
     destino = extraer_destino(state["question"])
     costo = random.choice(COSTOS)
     return {**state, "context": "[Agente Costos]",
-            "answer": f"💰 Viajar a {destino.title()} cuesta en promedio {costo} por persona. {DISCLAIMER}"}
+            "answer": f"Viajar a {destino.title()} cuesta en promedio {costo} por persona. {DISCLAIMER}"}
 
 def agente_lugares(state):
     destino = extraer_destino(state["question"])
@@ -110,7 +123,7 @@ def agente_lugares(state):
     seleccion = random.sample(lugares, k=min(3, len(lugares)))
     lugares_txt = ", ".join(seleccion)
     return {**state, "context": "[Agente Lugares]",
-            "answer": f"🏛️ En {destino.title()} te recomiendo visitar: {lugares_txt}. {DISCLAIMER}"}
+            "answer": f"En {destino.title()} te recomiendo visitar: {lugares_txt}. {DISCLAIMER}"}
 
 
 # -----------------------------
@@ -118,7 +131,6 @@ def agente_lugares(state):
 # -----------------------------
 def run_graph(question: str):
     state = {"question": question}
-
     state = guardrails(state)
     if state["blocked"]:
         return state
@@ -126,26 +138,46 @@ def run_graph(question: str):
     state = clasificador(state)
 
     if state["categoria"] == "clima":
-        state = agente_clima(state)
+        return agente_clima(state)
     elif state["categoria"] == "costos":
-        state = agente_costos(state)
+        return agente_costos(state)
     else:
-        state = agente_lugares(state)
-
-    return state
+        return agente_lugares(state)
 
 
 # -----------------------------
 # 7) Flask Endpoints
 # -----------------------------
+
 @app.route("/api/ask", methods=["POST"])
 def ask():
-    data = request.get_json()
+    """
+    Endpoint para recibir preguntas.
+    - Se agrega validación de JSON.
+    - Retorna código 400 si el JSON no es válido.
+    """
+    if not request.is_json:
+        return jsonify({"answer": "La solicitud debe ser JSON."}), 400
+
+    data = request.get_json(silent=True)
+    if not data or "question" not in data:
+        return jsonify({"answer": "Falta el campo 'question'."}), 400
+
     question = data.get("question", "")
     return jsonify(run_graph(question))
 
+
 @app.route("/", methods=["GET"])
 def serve_index():
-    return send_from_directory(".", "index.html")
+    """
+    Sirve el archivo index.html.
+    - Compatible con Vercel porque usa static_folder configurado.
+    """
+    return send_from_directory(app.static_folder, "index.html")
 
 
+# Punto de entrada para pruebas locales
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 5000))
+    # host='0.0.0.0' permite que Vercel escuche correctamente
+    app.run(host="0.0.0.0", port=port)

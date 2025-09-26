@@ -8,33 +8,35 @@
   <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-  <div class="chat-container">
-    <h1>Planificador de Viajes</h1>
+  <header>
+    <h1>Agente Turístico Conversacional</h1>
+    <p>Planifica tu itinerario ideal de manera responsable y segura</p>
+  </header>
 
-    <div id="chat-box" class="chat-box"></div>
+  <main id="chat-container"></main>
 
-    <form id="chat-form">
-      <!--'name' para accesibilidad, 'required' para validar -->
-      <input type="text" id="user-input" name="question" placeholder="Escribe tu pregunta de viaje..." required/>
-      <button type="submit">Enviar</button>
-    </form>
-  </div>
+  <form id="input-area">
+    <input type="text" id="question" name="question" placeholder="Escribe tu pregunta de viaje..." required/>
+    <button type="submit">Enviar</button>
+  </form>
+
+  <footer>
+    © 2025 Agente Turístico – Información ficticia con fines académicos
+  </footer>
 
   <script>
-    const form = document.getElementById("chat-form");
-    const chatBox = document.getElementById("chat-box");
-    const input = document.getElementById("user-input");
+    const form = document.getElementById("input-area");
+    const chatContainer = document.getElementById("chat-container");
+    const input = document.getElementById("question");
 
-    //función para agregar mensajes al chat con clases diferenciadas
     function addMessage(text, sender = "bot") {
       const msg = document.createElement("div");
-      msg.className = `msg ${sender}`;
+      msg.className = `message ${sender}`;
       msg.textContent = text;
-      chatBox.appendChild(msg);
-      chatBox.scrollTop = chatBox.scrollHeight;
+      chatContainer.appendChild(msg);
+      chatContainer.scrollTop = chatContainer.scrollHeight;
     }
 
-    // manejo del submit usando POST a /api/ask
     form.addEventListener("submit", async (e) => {
       e.preventDefault();
       const question = input.value.trim();
@@ -44,16 +46,13 @@
       input.value = "";
 
       try {
-        const response = await fetch("/api/ask", {
-          method: "POST",    //POST para coincidir con Flask
+        const response = await fetch(`${window.location.origin}/api/ask`, {
+          method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ question })
         });
 
-        if (!response.ok) {
-          throw new Error(`Error del servidor: ${response.status}`);
-        }
-
+        if (!response.ok) throw new Error(`Error del servidor: ${response.status}`);
         const data = await response.json();
         addMessage(`Bot: ${data.answer}`);
       } catch (err) {
@@ -62,8 +61,7 @@
       }
     });
 
-    //mensaje de bienvenida inicial
-    addMessage("¡Hola! Soy tu agente de viajes.  Cuéntame a dónde te gustaría viajar, tu presupuesto o cuántos días tienes y te daré recomendaciones de clima, costos y lugares a visitar.");
+    addMessage("¡Hola! Soy tu agente de viajes. Cuéntame tu destino, presupuesto o días disponibles para darte recomendaciones.");
   </script>
 </body>
 </html>

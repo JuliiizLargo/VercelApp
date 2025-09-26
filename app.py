@@ -39,7 +39,7 @@ def guardrails(state):
     if not question.split():
         return {**state, "blocked": True, "answer": "❌ No hay ninguna pregunta de entrada."}
 
-    if any(p in question for p in ["odio", "violencia", "insulto", "matar", "robar", "pegar", "agredir", "golpear", "lastimar", "amenazar", "dañar", "abusar", "secuestrar", "torturar", "herir", "discriminar", "humillar", "intimidar", "vengar", "sabotear", "maltratar", "violar", "corromper", "estafar", "traicionar", "despreciar", "destruir", "oprimir", "castigar", "maldecir", "provocar", "burlar", "manipular", "saquear", "extorsionar", "asesinar"]
+    if any(p in question for p in ["odio", "odiar", "violencia", "insulto", "insultar", "matar", "robar", "pegar", "agredir", "golpear", "lastimar", "amenazar", "dañar", "abusar", "secuestrar", "secuestro", "torturar", "herir", "discriminar", "humillar", "intimidar", "vengar", "sabotear", "maltratar", "violar", "corromper", "estafar", "traicionar", "despreciar", "destruir", "oprimir", "castigar", "maldecir", "provocar", "burlar", "manipular", "saquear", "extorsionar", "asesinar"]
 ):
         return {**state, "blocked": True, "answer": "❌ Contenido inapropiado detectado."}
 
@@ -147,4 +147,5 @@ def ask():
 @app.route("/", methods=["GET"])
 def serve_index():
     return send_from_directory(".", "index.html")
+
 

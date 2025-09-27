@@ -43,24 +43,48 @@ DISCLAIMER = "ℹ Nota: Esta información es ficticia y solo con fines académic
 # Guardrails (filtros de seguridad)
 # -----------------------------
 def guardrails(state):
-    q = state["question"].lower().strip()
-    if not q:
-        return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
-
-    prohibidas = ["odio","violencia","matar","robar","abusar","secuestrar"]
-    fraudes = ["plagio","scraping","paywall","piratear","crackear"]
-    if any(p in q for p in prohibidas + fraudes):
-        return {**state, "blocked": True,
-                "answer": "Contenido inapropiado o deshonesto detectado."}
-
-    # Datos personales: correo, teléfono, ID
-    if re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}", q):
-        return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
-    if re.search(r"\+?\d{8,}", q):
-        return {**state, "blocked": True, "answer": "No puedo mostrar números de teléfono."}
-    if re.search(r"\b\d{6,12}\b", q):
-        return {**state, "blocked": True, "answer": "No puedo procesar números de identificación."}
-
+    question = state["question"].lower().strip()
+    
+    
+    # Verificar que haya texto
+    if not question:
+    return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
+    
+    
+    # Filtro de contenido dañino
+    palabras_prohibidas = [
+    "odio","odiar","violencia","insulto","insultar","matar","robar","pegar","agredir","golpear",
+    "lastimar","amenazar","dañar","abusar","secuestrar","secuestro","torturar","herir","discriminar",
+    "humillar","intimidar","vengar","sabotear","maltratar","violar","corromper","estafar","traicionar",
+    "despreciar","destruir","oprimir","castigar","maldecir","provocar","burlar","manipular","saquear",
+    "extorsionar","asesinar"
+    ]
+    if any(p in question for p in palabras_prohibidas):
+    return {**state, "blocked": True, "answer": "Contenido inapropiado detectado."}
+    
+    
+    # Datos personales
+    if re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}", question):
+    return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
+    if re.search(r"\+?\d{8,}", question):
+    return {**state, "blocked": True, "answer": "No puedo mostrar datos de contacto."}
+    
+    
+    # Preguntas muy cortas
+    if len(question.split()) < 2:
+    return {**state, "blocked": True, "answer": "Pregunta demasiado corta para recomendar algo."}
+    
+    
+    # Plagio / acceso no autorizado
+    if any(p in question for p in ["plagio","descargar libro gratis","bypass","paywall"]):
+    return {**state, "blocked": True, "answer": "No puedo ayudar con tareas de plagio o acceso no autorizado."}
+    
+    
+    # Salud / legal
+    if any(p in question for p in ["medicina","tratamiento","receta","abogado","demanda"]):
+    return {**state, "blocked": True, "answer": "Este sistema no está diseñado para dar consejos médicos o legales."}
+    
+    
     return {**state, "blocked": False}
 
 # -----------------------------
@@ -159,3 +183,4 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+

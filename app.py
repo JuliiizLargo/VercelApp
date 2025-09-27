@@ -48,7 +48,7 @@ def guardrails(state):
     
     # Verificar que haya texto
     if not question:
-    return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
+        return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
     
     
     # Filtro de contenido dañino
@@ -60,29 +60,29 @@ def guardrails(state):
     "extorsionar","asesinar"
     ]
     if any(p in question for p in palabras_prohibidas):
-    return {**state, "blocked": True, "answer": "Contenido inapropiado detectado."}
+        return {**state, "blocked": True, "answer": "Contenido inapropiado detectado."}
     
     
     # Datos personales
     if re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}", question):
-    return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
+        return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
     if re.search(r"\+?\d{8,}", question):
-    return {**state, "blocked": True, "answer": "No puedo mostrar datos de contacto."}
+        return {**state, "blocked": True, "answer": "No puedo mostrar datos de contacto."}
     
     
     # Preguntas muy cortas
     if len(question.split()) < 2:
-    return {**state, "blocked": True, "answer": "Pregunta demasiado corta para recomendar algo."}
+        return {**state, "blocked": True, "answer": "Pregunta demasiado corta para recomendar algo."}
     
     
     # Plagio / acceso no autorizado
     if any(p in question for p in ["plagio","descargar libro gratis","bypass","paywall"]):
-    return {**state, "blocked": True, "answer": "No puedo ayudar con tareas de plagio o acceso no autorizado."}
+        return {**state, "blocked": True, "answer": "No puedo ayudar con tareas de plagio o acceso no autorizado."}
     
     
     # Salud / legal
     if any(p in question for p in ["medicina","tratamiento","receta","abogado","demanda"]):
-    return {**state, "blocked": True, "answer": "Este sistema no está diseñado para dar consejos médicos o legales."}
+        return {**state, "blocked": True, "answer": "Este sistema no está diseñado para dar consejos médicos o legales."}
     
     
     return {**state, "blocked": False}
@@ -183,4 +183,5 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 

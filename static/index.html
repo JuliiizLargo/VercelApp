@@ -16,7 +16,7 @@
     <main id="chat-box" class="chat-box">
       <!-- Mensaje inicial -->
       <div class="message bot">
-        ¡Hola! Soy tu agente turístico. Pregúntame por clima, costos, lugares o un <b>itinerario</b> indicando días y, si quieres, un <b>tema</b> (arte, foodie, low-cost, familiar).<br/>
+        ¡Hola! Soy tu agente turístico. Pregúntame por clima, costos, lugares o un itinerario indicando días y, si quieres, un tema (arte, foodie, low-cost, familiar).
       </div>
     </main>
 
@@ -60,7 +60,7 @@
         return wrapper;
       }
 
-      // 1) Separamos cabecera, bloques de días y nota final
+      //Separamos cabecera, bloques de días y nota final
       const lines = answer.split('\n').map(l => l.trim()).filter(Boolean);
 
       // Cabecera (ej: "Itinerario de X días en Y — Tema: Z")
@@ -99,7 +99,7 @@
         wrapper.appendChild(aside);
       }
 
-      // 2) Extraemos tarjetas por día: comienzan con "- Día N"
+      // Extraemos tarjetas por día: comienzan con "- Día N"
       const dayBlocks = [];
       let current = [];
       for (const l of lines) {
@@ -117,7 +117,7 @@
       }
       if (current.length) dayBlocks.push(current);
 
-      // 3) Renderizamos cada bloque en una tarjeta
+      // Renderizamos cada bloque en una tarjeta
       const grid = document.createElement('div');
       grid.className = 'itinerary-grid';
 
@@ -147,7 +147,7 @@
 
       wrapper.appendChild(grid);
 
-      // 4) Si hay descargo/nota final, lo mostramos al final
+      // Si hay descargo/nota final, lo mostramos al final
       const disclaimer = lines.find(l => /^ℹ Nota:/i.test(l));
       if (disclaimer) {
         const note = document.createElement('div');
@@ -206,6 +206,7 @@
   </script>
 </body>
 </html>
+
 
 
 

@@ -330,7 +330,7 @@ def clasificador(state):
 
     if "clima" in q or "temperatura" in q:
         cat = "clima"
-    elif "precio" in q or "costo" in q or "presupuesto" in q or "vale" in q:
+    elif "precio" in q or "costo" in q or "presupuesto" in q or "vale" in q or "cuesta" in q:
         cat = "costos"
     elif "itinerario" in q or "plan" in q:
         cat = "itinerario"
@@ -385,6 +385,7 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
 
 

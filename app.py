@@ -323,17 +323,23 @@ def agente_itinerario(state):
 # Clasificador simple
 # -----------------------------
 def clasificador(state):
-    if state["blocked"]:
+    if state["blocked"]:  # solo si guardrails lo bloqueó
         return state
+
     q = state["question"].lower()
-    if "clima" in q:
+
+    if "clima" in q or "temperatura" in q:
         cat = "clima"
-    elif "precio" in q or "costo" in q:
+    elif "precio" in q or "costo" in q or "presupuesto" in q or "vale" in q:
         cat = "costos"
     elif "itinerario" in q or "plan" in q:
         cat = "itinerario"
-    else:
+    elif "lugar" in q or "visitar" in q or "atracción" in q:
         cat = "lugares"
+    else:
+        # Mensaje directo, sin bloquear
+        return {**state, "categoria": "ninguna", "answer": "Lo siento, no tengo información sobre esa consulta."}
+
     return {**state, "categoria": cat}
 
 # -----------------------------
@@ -342,9 +348,16 @@ def clasificador(state):
 def run_graph(question: str):
     st = {"question": question}
     st = guardrails(st)
+
     if st["blocked"]:
         return st
+
     st = clasificador(st)
+
+    # Caso "ninguna", Respuesta Predefinida
+    if st.get("categoria") == "ninguna":
+        return st
+
     if st["categoria"] == "clima":
         return agente_clima(st)
     if st["categoria"] == "costos":
@@ -372,5 +385,6 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 
 

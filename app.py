@@ -333,7 +333,7 @@ def clasificador(state):
     elif "itinerario" in q or "plan" in q:
         cat = "itinerario"
     else:
-        cat = "lugares"
+        return {**state, "blocked": True, "answer": "Lo siento, no tengo información sobre esa consulta."}
     return {**state, "categoria": cat}
 
 # -----------------------------
@@ -372,4 +372,5 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+
 

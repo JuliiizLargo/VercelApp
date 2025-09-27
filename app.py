@@ -2,7 +2,7 @@ from flask import Flask, request, jsonify, send_from_directory
 import random, re, os
 
 # Mantiene el frontend en la raíz
-app = Flask(__name__, static_folder=".", static_url_path="")
+app = Flask(__name__, static_folder="static", static_url_path="")
 
 # -----------------------------
 # Datos ficticios
@@ -152,3 +152,4 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
+

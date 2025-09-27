@@ -48,12 +48,19 @@ def guardrails(state):
         return {**state, "blocked": True, "answer": "No hay ninguna pregunta de entrada."}
 
     prohibidas = ["odio","violencia","matar","robar","abusar","secuestrar"]
-    if any(p in q for p in prohibidas):
-        return {**state, "blocked": True, "answer": "Contenido inapropiado detectado."}
+    fraudes = ["plagio","scraping","paywall","piratear","crackear"]
+    if any(p in q for p in prohibidas + fraudes):
+        return {**state, "blocked": True,
+                "answer": "Contenido inapropiado o deshonesto detectado."}
+
+    # Datos personales: correo, teléfono, ID
     if re.search(r"[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}", q):
         return {**state, "blocked": True, "answer": "No puedo procesar correos electrónicos."}
     if re.search(r"\+?\d{8,}", q):
-        return {**state, "blocked": True, "answer": "No puedo mostrar datos de contacto."}
+        return {**state, "blocked": True, "answer": "No puedo mostrar números de teléfono."}
+    if re.search(r"\b\d{6,12}\b", q):
+        return {**state, "blocked": True, "answer": "No puedo procesar números de identificación."}
+
     return {**state, "blocked": False}
 
 # -----------------------------
@@ -152,4 +159,3 @@ def serve_index():
 # Para pruebas locales
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)))
-

@@ -333,7 +333,7 @@ def clasificador(state):
     elif "itinerario" in q or "plan" in q:
         cat = "itinerario"
     else:
-        return {**state, "blocked": True, "answer": "Lo siento, no tengo información sobre esa consulta."}
+        cat = "lugares"
     return {**state, "categoria": cat}
 
 # -----------------------------

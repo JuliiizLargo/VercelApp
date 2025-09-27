@@ -1,6 +1,7 @@
-/* Fuente */
+/* Fuente moderna y limpia */
 @import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
 
+/* ====== Base ====== */
 body {
     margin: 0;
     padding: 0;
@@ -84,6 +85,12 @@ body {
     border-radius: 20px;
     font-size: 1rem;
     outline: none;
+    background: #fff;
+    color: #222;
+}
+
+.chat-form input::placeholder {
+    color: #7aaad0;
 }
 
 .chat-form button {
@@ -94,11 +101,15 @@ body {
     padding: 10px 20px;
     margin-left: 8px;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: background 0.3s, transform .06s ease;
 }
 
 .chat-form button:hover {
     background: #2c80b4;
+}
+
+.chat-form button:active{
+    transform: translateY(1px);
 }
 
 .chat-footer {
@@ -107,4 +118,152 @@ body {
     font-size: 0.85rem;
     color: #555;
     background: #ecf5fc;
+}
+
+/* ====== Scrollbar suave (opcional) ====== */
+.chat-box::-webkit-scrollbar {
+    width: 10px;
+}
+.chat-box::-webkit-scrollbar-track {
+    background: #e6f0fa;
+    border-radius: 10px;
+}
+.chat-box::-webkit-scrollbar-thumb {
+    background: #c7ddf0;
+    border-radius: 10px;
+}
+.chat-box::-webkit-scrollbar-thumb:hover {
+    background: #b3d2ec;
+}
+
+
+/* Encabezado del itinerario */
+.message.bot .itinerary-header{
+    font-weight: 700;
+    font-size: 1.05rem;
+    margin: 6px 0 10px;
+    /* Para contrastar sobre el fondo azul del bot */
+    color: #eaf6ff;
+}
+
+/* Bloque "Incluye" como recuadro */
+.message.bot .itinerary-aside{
+    background: #f1f8ff;
+    color: #1f3b4d;
+    border: 1px solid #d5e9fb;
+    border-radius: 10px;
+    padding: 10px 12px;
+    margin-bottom: 12px;
+}
+.message.bot .itinerary-aside .aside-title{
+    font-weight: 700;
+    margin-bottom: 6px;
+    color: #2c80b4;
+}
+.message.bot .itinerary-aside ul{
+    margin: 0;
+    padding-left: 18px;
+}
+.message.bot .itinerary-aside li{
+    margin: 4px 0;
+}
+
+/* Grid de tarjetas por día */
+.message.bot .itinerary-grid{
+    display: grid;
+    gap: 12px;
+    grid-template-columns: 1fr;           /* 1 columna en móviles */
+}
+
+/* A partir de 560px, dos columnas */
+@media (min-width: 560px){
+    .message.bot .itinerary-grid{
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Tarjeta por día: fondo claro para máxima legibilidad */
+.message.bot .itinerary-card{
+    background: #ffffff;
+    color: #223042;
+    border: 1px solid #e2eef8;
+    border-radius: 12px;
+    padding: 12px;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.08);
+}
+
+/* Título de la tarjeta (Día X) */
+.message.bot .itinerary-card h3{
+    margin: 0 0 8px;
+    font-size: 1rem;
+    color: #2c80b4;
+}
+
+/* Filas Mañana/Tarde/Noche/Tip */
+.message.bot .itinerary-row{
+    display: grid;
+    grid-template-columns: 90px 1fr;
+    gap: 6px 8px;
+    margin: 6px 0;
+    align-items: baseline;
+}
+
+.message.bot .itinerary-row .row-key{
+    color: #5b7ea0;
+    font-weight: 700;
+}
+
+.message.bot .itinerary-row .row-val{
+    color: #223042;
+}
+
+/* Nota/descargo al final */
+.message.bot .disclaimer{
+    margin-top: 10px;
+    font-size: .9rem;
+    color: #eaf6ff;
+    opacity: .95;
+    border-left: 3px solid #cfe8ff;
+    padding-left: 10px;
+}
+
+
+.message.bot .chip{
+    display: inline-block;
+    padding: 4px 8px;
+    border-radius: 999px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    background: #ffffff;
+    color: #2c80b4;
+    border: 1px solid #d5e9fb;
+    margin-right: 6px;
+}
+
+
+.message.bot b, 
+.message.bot strong{
+    color: #ffffff;
+}
+
+.message.bot i, 
+.message.bot em{
+    color: #eef7ff;
+    opacity: .95;
+}
+
+
+.message.bot a{
+    color: #fffb;
+    text-decoration: underline;
+}
+.message.bot a:hover{
+    color: #fff;
+}
+
+body.hc .message.bot {
+    background: #246a99;
+}
+body.hc .message.bot .itinerary-card{
+    border-color: #c9def0;
 }
